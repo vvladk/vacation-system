@@ -1,0 +1,33 @@
+{{template "base" .}}
+
+{{define "main"}}
+<div class="row justify-content-center">
+    <div class="card col-4">
+        <div class="card-body">
+            <h5 class="card-title">
+                New Holiday
+            </h5>
+            <div class="col-md-12">
+                <form class="row g-3" method="post" action="/extra_day/0">
+                    <div class="mb-3">
+                        <label for="HDate" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="HDate" name="HDate" aria-describedby="HDateHelp"
+                            value="" required>
+                        <div id="HDateHelp" class="form-text">
+                            Select the extra non working day
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea name="description" class="form-control" id="description" rows="3"
+                            aria-describedby="commentHelp"></textarea>
+                        <div id="commentHelp" class="form-text">Description</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-outline-secondary btn-sm">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

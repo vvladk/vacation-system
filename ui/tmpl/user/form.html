@@ -1,0 +1,103 @@
+{{template "base" .}}
+
+{{define "main"}}
+<div class="row justify-content-center">
+    <div class="card col-4">
+        <div class="card-body">
+            <h5 class="card-title">
+                {{if eq .Id 0}}
+                New Employee
+                {{else}}
+                Edit information for Employee
+                {{end}}
+            </h5>
+            <div class="col-md-12">
+                <form class="row g-3" method="post" action="/user/{{.Id}}">
+                    <input hidden name="_method" value="{{.Method}}">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="title" name="title" aria-describedby="titleHelp"
+                            value="{{.Title}}" required>
+                        <div id="titleHelp" class="form-text">
+                            Employee name
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="text" class="form-control" id="email" name="email" aria-describedby="emailHelp"
+                            value="{{.Email}}" required>
+                        <div id="emailHelp" class="form-text">
+                            Employee email
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="UserType" class="form-label">Type of Employee</label>
+                        {{$userType :=.UserType}}
+                        <select class="form-select" name="UserType" required>
+                            <option selected>Type of Employee</option>
+                            {{range .EmployeeTypes}}
+                            <option value="{{.}}" {{if eq . $userType}}selected{{end}}>
+                                {{.}}
+                            </option>
+                            {{end}}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        {{$flm := .FLMId}}
+                        <label for="FLM" class="form-label">First Line Manager</label>
+                        <select class="form-select" name="FLM">
+                            <option selected>First Line Manager</option>
+                            {{range $index, $element := .FLMs}}
+                            <option value="{{$element.Id}}" {{if eq $element.Id $flm}}selected{{end}}>
+                                {{$element.Title}}
+                            </option>
+                            {{end}}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="StartDate" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="StartDate" name="StartDate"
+                            aria-describedby="StartDateHelp" value="{{.StartDate}}" required>
+                        <div id="StartDateHelp" class="form-text">
+                            The date for starting calculation of vacation for the employee
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="SpillOver" class="form-label">Spillover Days</label>
+                        <input type="number" class="form-control" id="SpillOver" name="SpillOver"
+                            aria-describedby="SpillOverlHelp" value="{{.SpillOver}}" required>
+                        <div id="SpillOverHelp" class="form-text">
+                            Balance of paid vacation days for the Jan 1
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="ExtraDays" class="form-label">Extra Days</label>
+                        <input type="number" class="form-control" id="ExtraDays" name="ExtraDays"
+                            aria-describedby="ExtraDayslHelp" value="{{.ExtraDays}}" required>
+                        <div id="ExtraDayslHelp" class="form-text">
+                            Extra Days
+                        </div>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="IsActive" name="IsActive" value="1" {{if eq
+                            .IsActive true}}checked{{end}}>
+                        <label class="form-check-label" for="IsActive">Is employee active?</label>
+                    </div>
+                    <fieldset>
+                        <legend>Types of vacations:</legend>
+                        {{range .VacancyBalance}}
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="vacationType" name="vacationType"
+                                value="{{.Id}}" {{if eq .IsAvailable true}}checked{{end}}>
+                            <label class="form-check-label" for="IsActive">{{.Title}}</label>
+                        </div>
+                        {{end}}
+                    </fieldset>
+                    <button type="submit" class="btn btn-outline-secondary btn-sm">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

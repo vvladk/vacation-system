@@ -1,0 +1,121 @@
+{{template "base" .}}
+
+{{define "main"}}
+
+<div class="row justify-content-center">
+    <div class="card col-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-8">
+                    <h5 class="card-title">
+                        Deiails of Employee
+                    </h5>
+                </div>
+                <div class="col-4">
+                    <button type="button" class="btn btn-outline-secondary btn-sm">
+                        <a class="nav-link" href="/users/{{.Id}}">
+                            <i class="bi bi-pencil-square"></i>
+                            Edit
+                        </a>
+                    </button>
+                </div>
+            </div>
+            <table class="table table-striped" id="info-table">
+                <tbody>
+                    <tr>
+                        <th scope="row">
+                            Employee:
+                        </th>
+                        <td>
+                            {{.Title}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            Email:
+                        </th>
+                        <td>
+                            {{.Email}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            Type:
+                        </th>
+                        <td>
+                            {{.UserType}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            FLM:
+                        </th>
+                        <td>
+                            {{if eq .FLMTitle ""}}-{{else}}{{.FLMTitle}}{{end}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            Is Active:
+                        </th>
+                        <td>
+                            {{.IsActive}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            Start Date:
+                        </th>
+                        <td>
+                            {{.StartDate}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            Extra Days:
+                        </th>
+                        <td>
+                            {{.ExtraDays}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            Spillover:
+                        </th>
+                        <td>
+                            {{.SpillOver}}
+                        </td>
+                    </tr>
+                    {{range .VacancyBalance}}
+                    <tr class="bg-secondary text-white">
+                        <td colspan="2" class="bg-secondary text-white">{{.Title}}</td>
+                    </tr>
+
+                    {{if eq .IsAvailable false}}
+                    <tr>
+                        <td colspan="2">Unavailable</td>
+                    </tr>
+                    {{else}}
+                    {{if eq .IsUnLim false}}
+                    <tr>
+                        <th>Available till DEC 31</th>
+                        <td>{{.AvailableTillNY}}</td>
+                    </tr>
+                    <tr>
+                        <th>Available fo now</th>
+                        <td>{{.TillNow}}</td>
+                    </tr>
+                    {{end}}
+                    <tr>
+                        <th>Spent</th>
+                        <td>{{printf "%.2f" .Spent}}</td>
+                    </tr>
+                    {{end}}
+
+                    {{end}}
+                </tbody>
+        </div>
+    </div>
+</div>
+
+{{end}}

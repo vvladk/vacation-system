@@ -1,0 +1,7 @@
+{{template "base" .}}
+{{define "links"}}
+<li class="breadcrumb-item"></li>
+{{range .Links}}
+<li class="breadcrumb-item"><a href="{{.Link}}" {{if eq "true" .LinkActive}}active{{end}}>{{.LinkTitle}}</a></li>
+{{end}}
+{{end}}
