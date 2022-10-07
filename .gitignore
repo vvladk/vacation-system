@@ -16,3 +16,4 @@
 .DS_Store
 ini/vs.ini
 storage/vs.sqlite
+storage/init/02.insert.users.sql
