@@ -75,6 +75,7 @@ func AuthCallBack(rw http.ResponseWriter, r *http.Request, p httprouter.Params) 
 		session.Values["ID"] = u.Id
 		session.Values["email"] = u.Email
 		session.Values["UserType"] = u.UserType
+		session.Values["UserTitle"] = u.Title
 		gothic.Store.Save(r, rw, session)
 		http.Redirect(rw, r, "/users/", http.StatusFound)
 	} else {

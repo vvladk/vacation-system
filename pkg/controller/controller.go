@@ -5,6 +5,9 @@ import (
 	"log"
 	"net/http"
 	"vsystem/config"
+	"vsystem/pkg/controller/auth"
+
+	"github.com/markbates/goth/gothic"
 )
 
 type Links struct {
@@ -19,11 +22,16 @@ type ViewData struct {
 	SubMenuItem string
 	Method      string
 	Links       []Links
+	UTitle      string
+	UType       string
 }
 
-func NewData() *ViewData {
+func NewData(r *http.Request) *ViewData {
+	session, _ := gothic.Store.Get(r, auth.CookiesName)
 	return &ViewData{
 		AppTitle: config.AppTitle,
+		UTitle:   session.Values["UserTitle"].(string),
+		UType:    session.Values["UserType"].(string),
 	}
 }
 

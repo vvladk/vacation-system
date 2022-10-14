@@ -19,9 +19,9 @@ type ViewData struct {
 	EmployeeTypes []string
 }
 
-func NewData() *ViewData {
+func NewData(r *http.Request) *ViewData {
 	return &ViewData{
-		*controller.NewData(),
+		*controller.NewData(r),
 		*muser.NewUserList(),
 		*muser.NewUser(),
 		config.UserTypes,
@@ -30,7 +30,7 @@ func NewData() *ViewData {
 
 // Return all existing users
 func GetAll(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	data := NewData()
+	data := NewData(r)
 	data.Links = append(data.Links, controller.Links{Link: `/users`, LinkActive: `true`, LinkTitle: `Employees`})
 	data.MenuItem = "Users"
 
@@ -48,7 +48,7 @@ func GetAll(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 // Display form for creation or edit user
 func CreateUpdate(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	data := NewData()
+	data := NewData(r)
 	data.Links = append(data.Links, controller.Links{Link: `/users`, LinkActive: `true`, LinkTitle: `Employees`})
 	data.MenuItem = "Users"
 	data.Method = "POST"
@@ -96,7 +96,7 @@ func Save(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 // Show full information about employee
 func ShowById(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	data := NewData()
+	data := NewData(r)
 	data.Links = append(data.Links, controller.Links{Link: `/users`, LinkActive: `true`, LinkTitle: `Employees`})
 	data.MenuItem = "Users"
 	id, err := strconv.Atoi(p.ByName("uId"))

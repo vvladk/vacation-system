@@ -17,15 +17,18 @@
     <nav
         class="navbar navbar-expand-lg bg-secondary align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom fixed-top">
         <span>&nbsp;<a class="navbar-brand link-light" href="/">{{.AppTitle}}</a></span>
+
         <ul class="nav justify-content-center">
             <li class="nav-item">
                 <a class='nav-link link-light {{if eq .MenuItem "Home"}}active{{end}}' href="/">Vacations</a>
             </li>
+            {{if ne .UType "Employee"}}
             <li class="nav-item">
-                <a class='nav-link link-light {{if eq .MenuItem "Type of Vacations"}}active{{end}}' href="/types">
-                    Type of Vacations
+                <a class='nav-link link-light {{if eq .MenuItem "requests"}}active{{end}}' href="/requests">
+                    My requests
                 </a>
             </li>
+            {{end}}
             <li class="nav-item">
                 <a class='nav-link link-light {{if eq .MenuItem "holidays"}}active{{end}}'
                     href="/extra_days">Holidays</a>
@@ -38,7 +41,7 @@
             </li>
         </ul>
         <div class="col-md-3">
-            &nbsp;
+            <span>&nbsp;<a class="navbar-brand link-light" href="/">{{.UTitle}}</a></span>
         </div>
     </nav>
     <div class="container mt-1 bd-content">

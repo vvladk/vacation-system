@@ -1,0 +1,43 @@
+{{template "base" .}}
+
+{{define "main"}}
+{{$vacationTypeId:= .Vacation.TypeId}}
+<div class="col-12 justify-content-center d-flex">
+    <div class="card row col-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-6">
+                    <h5 class="card-title">Your Vacations</h5>
+                </div>
+
+            </div>
+            <div class="row col-8">
+                <div class="p-2 w-50">Type:</div>
+                <div class="p-2 w-50 d-flex justify-content-start fw-bold">{{.Vacation.TypeTitle}}</div>
+                <div class="p-2 w-50">Start Date:</div>
+                <div class="p-2 w-50 d-flex justify-content-start fw-bold">{{.Vacation.StartDate}}</div>
+                <div class="p-2 w-50">End Date:</div>
+                <div class="p-2 w-50 d-flex justify-content-start fw-bold">{{.Vacation.EndDate}}</div>
+                <div class="p-2 w-50">Duration:</div>
+                <div class="p-2 w-50 d-flex justify-content-start fw-bold">{{.Vacation.Duration}} work days</div>
+                <div class="p-2 w-100 fw-bold"> Balance excluding current </div>
+                {{range .VacancyBalance}}
+                {{if eq $vacationTypeId .Id}}
+                <div class="p-2 w-50">Days for today:</div>
+                <div class="p-2 w-50 d-flex justify-content-start fw-bold">{{.TillNow}} work days</div>
+                <div class="p-2 w-50">Days till end of year:</div>
+                <div class="p-2 w-50 d-flex justify-content-start fw-bold">{{.AvailableTillNY}} work days</div>
+                {{end}}
+                {{end}}
+            </div>
+            <form method="post" action="/vacations/{{.Vacation.Id}}">
+                <input hidden name="StartDate" value="{{.Vacation.StartDate}}">
+                <input hidden name="EndDate" value="{{.Vacation.EndDate}}">
+                <input hidden name="TypeId" value="{{$vacationTypeId}}">
+                <input hidden name="_method" value="PUT">
+                <button type="submit" class="btn btn-outline-secondary btn-sm">Create</button>
+            </form>
+        </div>
+    </div>
+</div>
+{{end}}

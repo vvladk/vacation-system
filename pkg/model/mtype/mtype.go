@@ -47,3 +47,14 @@ func (l *VacationTypeList) GetVacationTypeList() {
 	v.IsUnlim = false
 	l.List = append(l.List, *v)
 }
+
+func (l *VacationTypeList) GetById(id int) VacationType {
+	vT := newVacationType()
+	l.GetVacationTypeList()
+	for _, v := range l.List {
+		if v.TypeId == id {
+			*vT = v
+		}
+	}
+	return *vT
+}

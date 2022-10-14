@@ -37,3 +37,57 @@ func GetEndDate(dateIn string, duration int) string {
 	endDate := date.AddDate(0, 0, duration)
 	return fmt.Sprintf("%02d-%02d-%4d", endDate.Day(), endDate.Month(), endDate.Year())
 }
+
+func GetDuration(startDate, endDate string) int {
+	workHours := 9
+	startWorkDay := 9
+	endWOrkDay := 18
+	offSet := 15
+
+	sDate, err := time.Parse("2006-01-02", startDate)
+	sDate = sDate.Add(time.Hour * time.Duration(startWorkDay))
+	CheckErr(err)
+
+	nextDate := sDate
+
+	eDate, err := time.Parse("2006-01-02", endDate)
+	eDate = eDate.Add(time.Hour * time.Duration(endWOrkDay))
+	CheckErr(err)
+	duration := 0
+
+	if eDate.Weekday() == time.Saturday {
+		eDate = eDate.Add(-time.Hour * time.Duration(24))
+	}
+
+	if eDate.Weekday() == time.Sunday {
+		eDate = eDate.Add(-time.Hour * time.Duration(48))
+	}
+
+	for {
+		if (nextDate.Weekday() == time.Saturday) || (nextDate.Weekday() == time.Sunday) {
+			nextDate = nextDate.Add(time.Hour * time.Duration(24))
+			continue
+		}
+		nextDate = nextDate.Add(time.Hour * time.Duration(workHours))
+		duration++
+		log.Println(eDate, nextDate)
+		if nextDate.Equal(eDate) {
+			break
+		}
+		nextDate = nextDate.Add(time.Hour * time.Duration(offSet))
+	}
+
+	return duration - GetExtraDays(startDate, endDate)
+}
+
+// Return number of extra day between 2 dates
+func GetExtraDays(sDate, eDate string) int {
+	db := GetDB()
+	defer db.Close()
+	var days int
+	sqlS := `SELECT COUNT(*) FROM extra_days WHERE extra_day BETWEEN ? AND ?`
+
+	db.QueryRow(sqlS, sDate, eDate).Scan(&days)
+
+	return days
+}

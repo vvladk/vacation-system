@@ -7,6 +7,7 @@ import (
 	"vsystem/config"
 	"vsystem/pkg/controller/auth"
 	"vsystem/pkg/controller/cextraday"
+	"vsystem/pkg/controller/crequest"
 	"vsystem/pkg/controller/cuser"
 	"vsystem/pkg/controller/cvacation"
 	"vsystem/pkg/middleware"
@@ -15,6 +16,7 @@ import (
 )
 
 func main() {
+
 	router := httprouter.New()
 
 	serverString := fmt.Sprintf("%s:%d", config.Host, config.Port)
@@ -40,11 +42,25 @@ func main() {
 	router.POST(`/extra_day/:id`, middleware.IsAuthorized(cextraday.Save))
 
 	// defaut path  get current list of my vacation
-	router.GET(`/`, cvacation.GetAllByUser)
-	// router.GET(`/vacation/:vId`, cvacation.GetOneById)               //Show edit form for update/create
-	// router.POST(`/preview_vacation/:vId`, cvacation.PreviewVacation) //Preview details
+	router.GET(`/`, middleware.IsAuthorized(cvacation.GetAllByUser))
+	router.GET(`/vacation/:vId`, middleware.IsAuthorized(cvacation.GetOneById))       //Show edit form for update/create
+	router.GET(`/vacations/:vId`, middleware.IsAuthorized(cvacation.PreviewVacation)) //Preview details
+	router.POST(`/vacations/:vId`, middleware.IsAuthorized(cvacation.Create))         //Cretae a vacation
+
+	// routes for manage requests
+	router.GET(`/requests`, middleware.IsAuthorized(crequest.GetAllByRole))
+	router.POST(`/requests/:vId`, middleware.IsAuthorized(crequest.UpadetByManager))
+	// router.GET(`/requests`, middleware.IsAuthorized(crequest.GetAllByRole))
 
 	log.Println("Starting server on ", serverString)
 	log.Fatal(http.ListenAndServe(serverString, router))
 
 }
+
+// todo
+// Add info about spillovers and extra days
+// Add view of extra days for non HR
+// update balanse calculation add - statuses
+//  split view for employee FLM and HR
+// oredering for HR amd FLM
+// todo - todo:)

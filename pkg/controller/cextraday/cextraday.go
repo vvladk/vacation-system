@@ -13,15 +13,15 @@ type ViewData struct {
 	mextraday.ExtraDayList
 }
 
-func NewData() *ViewData {
+func NewData(r *http.Request) *ViewData {
 	return &ViewData{
-		*controller.NewData(),
+		*controller.NewData(r),
 		*mextraday.NewExtraDayList(),
 	}
 }
 
 func GetAll(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	data := NewData()
+	data := NewData(r)
 	data.Links = append(data.Links, controller.Links{Link: `/extra_days`, LinkActive: `true`, LinkTitle: `Holidays`})
 	data.MenuItem = "Holidays"
 
@@ -36,7 +36,7 @@ func GetAll(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
 }
 
 func Create(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	data := NewData()
+	data := NewData(r)
 	data.Links = append(data.Links, controller.Links{Link: `/extra_days`, LinkActive: `true`, LinkTitle: `Holidays`})
 	data.MenuItem = "Holidays"
 

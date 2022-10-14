@@ -1,0 +1,70 @@
+{{template "base" .}}
+{{define "main"}}
+{{ $utype := .UType}}
+<div class="col-12 justify-content-center d-flex">
+    <div class="card col-12">
+        <div class="card-body">
+            <table class="table table-striped" id="info-table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Employee</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Start Date</th>
+                        <th scope="col">End Date</th>
+                        <th scope="col">Duration</th>
+                        <th scope="col">Spent</th>
+                        <th scope="col">Currently Available</th>
+                        <th scope="col">As of Dec 31</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range .VacationList.List}}
+                    <tr>
+                        <th scope="row">{{.Nn}}</th>
+                        <td>{{.UserTitle}}</td>
+                        <td>{{.TypeTitle}}</td>
+                        <td>{{.StatusTitle}}</td>
+                        <td>{{.StartDate}}</td>
+                        <td>{{.EndDate}}</td>
+                        <td>{{.Duration}}</td>
+                        <td>{{.Spent}}</td>
+                        <td>{{.CurrentlyAvailable}}</td>
+                        <td>{{.AsOfDec31}}</td>
+                        {{if eq $utype "FLM"}}
+                        <td>
+                            {{if eq .Status 1}}
+                            <form action="/requests/{{.Id}}" method="POST">
+                                <input type="hidden" name="response" value="yes">
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">Approve</button>
+                            </form>
+                            <form action="/requests/{{.Id}}" method="POST">
+                                <input type="hidden" name="response" value="no">
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">Decline</button>
+                            </form>
+                            {{end}}
+                        </td>
+                        {{end}}
+                        {{if eq $utype "HR"}}
+                        <td>
+                            {{ if and (ne .Status 1) (ne .Status 3) }}
+                            <form action="/requests/{{.Id}}" method="POST">
+                                <input type="hidden" name="response" value="yes">
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">Approve</button>
+                            </form>
+                            <form action="/requests/{{.Id}}" method="POST">
+                                <input type="hidden" name="response" value="no">
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">Decline</button>
+                            </form>
+                            {{end}}
+                        </td>
+                        {{end}}
+                    </tr>
+                    {{end}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{{end}}

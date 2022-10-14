@@ -1,0 +1,87 @@
+{{template "base" .}}
+
+{{define "main"}}
+<div class="col-12 justify-content-center d-flex">
+    <div class="card col-8">
+        <div class="card-body">
+            <div class="col-3">
+                <h5 class="card-title">Balance</h5>
+            </div>
+            <table class="table table-striped" id="info-table">
+
+                <thead>
+                    <tr>
+                        <th scope="col">Type</th>
+                        <th scope="col">Available till DEC 31</th>
+                        <th scope="col">Available fo now</th>
+                        <th scope="col">Spent</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range .VacancyBalance}}
+                    {{if eq .IsAvailable true}}
+                    <tr>
+                        <th scope="row">{{.Title}}</th>
+                        {{if eq .IsUnLim false}}
+                        <td>{{.AvailableTillNY}}</td>
+                        <td>{{.TillNow}}</td>
+                        {{else}}
+                        <td>-</td>
+                        <td>-</td>
+                        {{end}}
+                        <td>{{printf "%.2f" .Spent}}</td>
+                    </tr>
+                    {{end}}
+                    {{end}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="col-12 justify-content-center d-flex">
+    <div class="card col-8">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-3">
+                    <h5 class="card-title">Your Vacations</h5>
+                </div>
+                <div class="col-3">
+                    <button type="button" class="btn btn-outline-secondary  btn-sm">
+                        <a class="nav-link" href="/vacation/0">
+                            <i class="bi bi-plus-circle-fill"></i>
+                            New vacation
+                        </a>
+                    </button>
+                </div>
+
+            </div>
+            <table class="table table-striped" id="info-table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Start Date</th>
+                        <th scope="col">End Date</th>
+                        <th scope="col">Duration</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range .VacationList.List}}
+                    <tr>
+                        <th scope="row">{{.Nn}}</th>
+                        <td>{{.TypeTitle}}</td>
+                        <td>{{.StatusTitle}}</td>
+                        <td>{{.StartDate}}</td>
+                        <td>{{.EndDate}}</td>
+                        <td>{{.Duration}}</td>
+                        <td>{{if eq .Status 1}}delete{{else}}cancel{{end}}</td>
+                    </tr>
+                    {{end}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{{end}}

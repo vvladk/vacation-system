@@ -22,7 +22,27 @@ const (
 	UnPaidVacationId     = 2
 	PaidVacationId       = 1
 	SickLeaveId          = 3
+
+	//vacations stsatuses
+	CreatedByUser      = 1
+	CreatedByUserTitle = `Created`
+	AcceptedByFLM      = 2
+	AcceptedByFLMTitle = `Accepted by FLM`
+	RejectedByFLM      = 3
+	RejectedByFLMTitle = `Rejected by FLM`
+	AcceptedByHR       = 4
+	AcceptedByHRTitle  = `Accepted by HR`
+	RejectedByHR       = 5
+	RejectedByHRTitle  = `Rejected by HR`
 )
+
+var Statuses = map[int]string{
+	CreatedByUser: CreatedByUserTitle,
+	AcceptedByFLM: AcceptedByFLMTitle,
+	RejectedByFLM: RejectedByFLMTitle,
+	AcceptedByHR:  AcceptedByHRTitle,
+	RejectedByHR:  RejectedByHRTitle,
+}
 
 var Cfg *ini.File
 
