@@ -1,9 +1,66 @@
 {{template "base" .}}
 {{define "main"}}
 {{ $utype := .UType}}
+{{ $emploteeId := .HRView.EmployeeId}}
+{{ $typeId := .HRView.VacationTypeId}}
+{{ $status := .HRView.Status}}
+{{ $startDate := .HRView.StartDate}}
+{{ $endDate := .HRView.EndDate}}
+
 <div class="col-12 justify-content-center d-flex">
     <div class="card col-12">
         <div class="card-body">
+            {{if eq .UType "HR"}}
+
+            <form action="/requests" method="get">
+                <div class="row">
+                    <div class="col">
+                        <label for="Employee" class="form-label">Employee</label>
+                        <select class="form-select" name="Employee">
+                            {{range .UserList.List}}
+                            <option value="{{.Id}}" {{if eq .Id $emploteeId}}selected{{end}}>
+                                {{.Title}}
+                            </option>
+                            {{end}}
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="VacationType" class="form-label">Vacation Type</label>
+                        <select class="form-select" name="VacationType">
+                            {{range .VacationTypeList.List}}
+                            <option value="{{.TypeId}}" {{if eq .TypeId $typeId}}selected{{end}}>
+                                {{.TypeTitle}}
+                            </option>
+                            {{end}}
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="Status" class="form-label">Status</label>
+                        <select class="form-select" name="Status">
+                            {{range .HRView.StatusList}}
+                            <option value="{{.}}" {{if eq . $status}}selected{{end}}>
+                                {{.}}
+                            </option>
+                            {{end}}
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="StartDate" class="form-label">From</label>
+                        <input type="date" class="form-control" id="StartDate" name="StartDate"
+                            value="{{.HRView.StartDate}}">
+                    </div>
+                    <div class="col">
+                        <label for="EndDate" class="form-label">To</label>
+                        <input type="date" class="form-control" id="EndDate" name="EndDate" value="{{.HRView.EndDate}}">
+                    </div>
+                    <div class="col">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="submit" class="btn btn-outline-secondary btn-sm form-control">Apply</button>
+                    </div>
+
+                </div>
+            </form>
+            {{end}}
             <table class="table table-striped" id="info-table">
                 <thead>
                     <tr>
@@ -15,8 +72,10 @@
                         <th scope="col">End Date</th>
                         <th scope="col">Duration</th>
                         <th scope="col">Spent</th>
-                        <th scope="col">Currently Available</th>
+                        <th scope="col">As of Now</th>
                         <th scope="col">As of Dec 31</th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -28,9 +87,14 @@
                         <td>{{.StatusTitle}}</td>
                         <td>{{.StartDate}}</td>
                         <td>{{.EndDate}}</td>
-                        <td>{{.Duration}}</td>
+                        <td>
+                            {{.Duration}}
+                            {{if eq .Partially `yes`}}
+                            ({{if eq .Part 1}}10:00 - 14:00{{else}}15:00 - 19:00{{end}})
+                            {{end}}
+                        </td>
                         <td>{{.Spent}}</td>
-                        <td>{{.CurrentlyAvailable}}</td>
+                        <td>{{.AsOfNow}}</td>
                         <td>{{.AsOfDec31}}</td>
                         {{if eq $utype "FLM"}}
                         <td>
@@ -39,25 +103,49 @@
                                 <input type="hidden" name="response" value="yes">
                                 <button type="submit" class="btn btn-outline-secondary btn-sm">Approve</button>
                             </form>
+                        </td>
+                        <td>
                             <form action="/requests/{{.Id}}" method="POST">
                                 <input type="hidden" name="response" value="no">
                                 <button type="submit" class="btn btn-outline-secondary btn-sm">Decline</button>
                             </form>
+                            {{else}}
+                        </td>
+                        <td>
                             {{end}}
                         </td>
                         {{end}}
                         {{if eq $utype "HR"}}
+                        {{ if and (ne .Status 1) (ne .Status 3) (ne .Status 5)}}
                         <td>
-                            {{ if and (ne .Status 1) (ne .Status 3) }}
+                            {{if ne .Status 4}}
                             <form action="/requests/{{.Id}}" method="POST">
                                 <input type="hidden" name="response" value="yes">
+                                <input type="hidden" name="Employee" value="{{$emploteeId}}">
+                                <input type="hidden" name="VacationType" value="{{$typeId }}">
+                                <input type="hidden" name="Status" value="{{$status}}">
+                                <input type="hidden" name="StartDate" value="{{$startDate}}">
+                                <input type="hidden" name="EndDate" value="{{$endDate}}">
                                 <button type="submit" class="btn btn-outline-secondary btn-sm">Approve</button>
                             </form>
+                            {{end}}
+                        </td>
+                        <td>
                             <form action="/requests/{{.Id}}" method="POST">
                                 <input type="hidden" name="response" value="no">
+                                <input type="hidden" name="Employee" value="{{$emploteeId}}">
+                                <input type="hidden" name="VacationType" value="{{$typeId }}">
+                                <input type="hidden" name="Status" value="{{$status}}">
+                                <input type="hidden" name="StartDate" value="{{$startDate}}">
+                                <input type="hidden" name="EndDate" value="{{$endDate}}">
                                 <button type="submit" class="btn btn-outline-secondary btn-sm">Decline</button>
                             </form>
                             {{end}}
+                        </td>
+                        {{else}}
+                        <td>
+                        </td>
+                        <td>
                         </td>
                         {{end}}
                     </tr>

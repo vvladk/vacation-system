@@ -3,6 +3,7 @@ package cvacation
 import (
 	"net/http"
 	"strconv"
+	"vsystem/config"
 	"vsystem/pkg/controller"
 	"vsystem/pkg/controller/auth"
 	"vsystem/pkg/model"
@@ -60,13 +61,22 @@ func GetOneById(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 	data.MenuItem = "Vacations"
 	id, err := strconv.Atoi(p.ByName("vId"))
-	data.Links = append(data.Links, controller.Links{Link: `/vacations/` + p.ByName("vId"), LinkActive: `true`, LinkTitle: `Vacation details`})
+	data.Links = append(data.Links, controller.Links{Link: `/`, LinkActive: `false`, LinkTitle: `Vacation details`})
 	model.CheckErr(err)
 	data.Vacation.GetById(id)
 	data.VacationTypeList.GetVacationTypeList()
+	form := "./ui/tmpl/vacations/"
+	if r.URL.Query().Get("partially") == `yes` {
+		data.Partially = `yes`
+		form += `form05.html`
+
+	} else {
+		form += `form.html`
+	}
 
 	tmpls := []string{
-		"./ui/tmpl/vacations/form.html",
+		form,
+		"./ui/tmpl/vacations/tabs.html",
 		"./ui/tmpl/layout/links.html",
 		"./ui/tmpl/layout/layout.html",
 	}
@@ -77,7 +87,7 @@ func PreviewVacation(rw http.ResponseWriter, r *http.Request, p httprouter.Param
 	data.Links = append(data.Links, controller.Links{Link: `/`, LinkActive: `true`, LinkTitle: `Vacations`})
 	id, err := strconv.Atoi(p.ByName("vId"))
 	model.CheckErr(err)
-	data.Links = append(data.Links, controller.Links{Link: `/vacations/` + p.ByName("vId"), LinkActive: `true`, LinkTitle: `Vacation details`})
+	data.Links = append(data.Links, controller.Links{Link: `/`, LinkActive: ``, LinkTitle: `Vacation details`})
 	data.MenuItem = "Vacations"
 
 	session, _ := gothic.Store.Get(r, auth.CookiesName)
@@ -87,12 +97,19 @@ func PreviewVacation(rw http.ResponseWriter, r *http.Request, p httprouter.Param
 
 		data.Vacation.Id = id
 		data.Vacation.TypeId, _ = strconv.Atoi(r.URL.Query().Get("TypeId"))
-		data.VacationTypeList.GetById(data.TypeId)
-		data.TypeTitle = data.VacationTypeList.List[0].TypeTitle
+		data.TypeTitle = data.VacationTypeList.GetById(data.Vacation.TypeId).TypeTitle
 		data.Vacation.StartDate = r.URL.Query().Get("StartDate")
 		data.Vacation.EndDate = r.URL.Query().Get("EndDate")
-		data.Duration = model.GetDuration(data.Vacation.StartDate, data.Vacation.EndDate)
 
+		if r.URL.Query().Get("partially") != `yes` {
+			data.Duration = float64(model.GetDuration(data.Vacation.StartDate, data.Vacation.EndDate))
+			data.Vacation.Partially = `no`
+		} else {
+			data.Duration = 0.5
+			data.Vacation.EndDate = data.Vacation.StartDate
+			data.Vacation.Part, _ = strconv.Atoi(r.URL.Query().Get("PartOfBd"))
+			data.Vacation.Partially = `yes`
+		}
 		tmpls := []string{
 			"./ui/tmpl/vacations/details.html",
 			"./ui/tmpl/layout/links.html",
@@ -112,8 +129,23 @@ func Create(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		data.Vacation.TypeId, _ = strconv.Atoi(r.PostFormValue("TypeId"))
 		data.Vacation.StartDate = r.PostFormValue("StartDate")
 		data.Vacation.EndDate = r.PostFormValue("EndDate")
-		data.Duration = model.GetDuration(data.Vacation.StartDate, data.Vacation.EndDate)
-		data.Vacation.Save2DB(v.(int))
+		data.Vacation.Part, _ = strconv.Atoi(r.PostFormValue("PartOfBd"))
+		data.Vacation.Partially = r.PostFormValue("partially")
+		if data.Vacation.Partially != `yes` {
+			data.Duration = float64(model.GetDuration(data.Vacation.StartDate, data.Vacation.EndDate))
+		} else {
+			data.Duration = 0.5
+		}
+		var status int
+		switch data.UType {
+		case config.UTypeEmp:
+			status = config.CreatedByUser
+		case config.UTypeFLM:
+			status = config.AcceptedByFLM
+		case config.UTypeHR:
+			status = config.AcceptedByHR
+		}
+		data.Vacation.Save2DB(v.(int), status)
 	}
 	http.Redirect(rw, r, "/", http.StatusFound)
 }

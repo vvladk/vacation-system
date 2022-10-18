@@ -41,6 +41,7 @@ CREATE TABLE vacations(
     startDate NUMERIC DEFAULT (date('now', 'localtime')),
     duration NUMERIC DEFAULT 1,
     status INTEGER NOT NULL  DEFAULT 0,
+    partOfBd INTEGER NOT NULL  DEFAULT 0,
     created_at NUMERIC DEFAULT (datetime('now', 'localtime')),
     updated_at NUMERIC DEFAULT (datetime('now', 'localtime')),
     CONSTRAINT vacations_user_FK FOREIGN KEY (userId) REFERENCES users(id)

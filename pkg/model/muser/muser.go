@@ -31,14 +31,14 @@ type FLM struct {
 }
 
 type VacancyBalance struct {
-	Id              int
-	Title           string
-	Rule            int
-	IsAvailable     bool
-	AvailableTillNY float64
-	TillNow         float64
-	Spent           float64
-	IsUnLim         bool
+	Id          int
+	Title       string
+	Rule        int
+	IsAvailable bool
+	AsOfDec31   float64
+	AsOfNow     float64
+	Spent       float64
+	IsUnLim     bool
 }
 
 func NewUser() *User {
@@ -140,7 +140,7 @@ func (u *User) GetVacationBalabce(uId int, dataStart string, ExtraD, SD float64)
 		vb := VacancyBalance{}
 		vb.Id = v.TypeId
 		vb.Title = v.TypeTitle
-		vb.AvailableTillNY = v.Amount
+		vb.AsOfDec31 = v.Amount
 		vb.Rule = v.Rule
 		vb.IsUnLim = v.IsUnlim
 
@@ -152,32 +152,41 @@ func (u *User) GetVacationBalabce(uId int, dataStart string, ExtraD, SD float64)
 		if tmpInt > 0 {
 			vb.IsAvailable = true
 			var tmpF sql.NullFloat64
-			sqlS2 = `SELECT SUM(duration) FROM vacations WHERE userId = ? AND typeId = ? AND strftime('%Y',startDate) = strftime('%Y','now')`
-			err = db.QueryRow(sqlS2, uId, vb.Id).Scan(&tmpF)
+			sqlS2 = `SELECT SUM(duration) FROM vacations 
+						WHERE 
+						userId = ? 
+							AND 
+						typeId = ? 
+							AND 
+						strftime('%Y',startDate) = strftime('%Y','now')
+							AND
+						status = ?`
+			err = db.QueryRow(sqlS2, uId, vb.Id, config.AcceptedByHR).Scan(&tmpF)
 			model.CheckErr(err)
 			vb.Spent = tmpF.Float64
 			if vb.Rule == config.AvailableImmediately {
-				vb.TillNow = vb.AvailableTillNY
+				vb.AsOfNow = vb.AsOfDec31
 			} else {
 				currentTime := time.Now()
 				//Check start date
 				dStart, err := time.Parse("2006-01-02", dataStart)
 				model.CheckErr(err)
 				if currentTime.Year() > dStart.Year() {
-					vb.TillNow = float64(currentTime.Month()-1) * vb.AvailableTillNY / 12
+					vb.AsOfNow = float64(currentTime.Month()-1) * vb.AsOfDec31 / 12
 				} else {
-					vb.AvailableTillNY = (12 - float64(dStart.Month()) + 1) * vb.AvailableTillNY / 12
-					vb.TillNow = float64(currentTime.Month()-1) * vb.AvailableTillNY / 12
+					vb.AsOfDec31 = (12 - float64(dStart.Month()) + 1) * vb.AsOfDec31 / 12
+					vb.AsOfNow = float64(currentTime.Month()-1) * vb.AsOfDec31 / 12
 				}
 				if vb.Id == config.PaidVacationId {
-					vb.AvailableTillNY += ExtraD + SD
-					vb.TillNow += ExtraD + SD
+					vb.AsOfDec31 += ExtraD + SD
+					vb.AsOfNow += ExtraD + SD
 				}
 			}
-			vb.AvailableTillNY -= vb.Spent
-			vb.TillNow -= vb.Spent
+			vb.AsOfDec31 -= vb.Spent
+			vb.AsOfNow -= vb.Spent
 		}
-
+		vb.AsOfDec31 = model.RoundDays(vb.AsOfDec31)
+		vb.AsOfNow = model.RoundDays(vb.AsOfNow)
 		u.VacancyBalance = append(u.VacancyBalance, vb)
 	}
 
@@ -185,7 +194,7 @@ func (u *User) GetVacationBalabce(uId int, dataStart string, ExtraD, SD float64)
 
 func (u *User) Save2DB(uId int) {
 	db := model.GetDB()
-
+	defer db.Close()
 	ctx := context.Background()
 	tx, err := db.BeginTx(ctx, nil)
 	model.CheckErr(err)

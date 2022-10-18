@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"vsystem/config"
 	"vsystem/pkg/controller/auth"
+	"vsystem/pkg/controller/ccalendar"
 	"vsystem/pkg/controller/cextraday"
 	"vsystem/pkg/controller/crequest"
 	"vsystem/pkg/controller/cuser"
@@ -42,15 +43,18 @@ func main() {
 	router.POST(`/extra_day/:id`, middleware.IsAuthorized(cextraday.Save))
 
 	// defaut path  get current list of my vacation
-	router.GET(`/`, middleware.IsAuthorized(cvacation.GetAllByUser))
-	router.GET(`/vacation/:vId`, middleware.IsAuthorized(cvacation.GetOneById))       //Show edit form for update/create
-	router.GET(`/vacations/:vId`, middleware.IsAuthorized(cvacation.PreviewVacation)) //Preview details
-	router.POST(`/vacations/:vId`, middleware.IsAuthorized(cvacation.Create))         //Cretae a vacation
+	router.GET(`/`, middleware.Logging(middleware.IsAuthorized(cvacation.GetAllByUser)))
+	router.GET(`/vacation/:vId`, middleware.Logging(middleware.IsAuthorized(cvacation.GetOneById)))       //Show edit form for update/create
+	router.GET(`/vacations/:vId`, middleware.Logging(middleware.IsAuthorized(cvacation.PreviewVacation))) //Preview details
+	router.POST(`/vacations/:vId`, middleware.Logging(middleware.IsAuthorized(cvacation.Create)))         //Cretae a vacation
 
 	// routes for manage requests
-	router.GET(`/requests`, middleware.IsAuthorized(crequest.GetAllByRole))
-	router.POST(`/requests/:vId`, middleware.IsAuthorized(crequest.UpadetByManager))
+	router.GET(`/requests`, middleware.Logging(middleware.IsAuthorized(crequest.GetAllByRole)))
+	router.POST(`/requests/:vId`, middleware.Logging(middleware.IsAuthorized(crequest.UpadetByManager)))
 	// router.GET(`/requests`, middleware.IsAuthorized(crequest.GetAllByRole))
+
+	//routes for calendar view
+	router.GET(`/calendar`, middleware.Logging(middleware.IsAuthorized(ccalendar.GetCalendar)))
 
 	log.Println("Starting server on ", serverString)
 	log.Fatal(http.ListenAndServe(serverString, router))
@@ -58,9 +62,9 @@ func main() {
 }
 
 // todo
-// Add info about spillovers and extra days
-// Add view of extra days for non HR
-// update balanse calculation add - statuses
+// Add info about spillovers and extra days --
+// Add view of extra days for non HR +
+// update balanse calculation add - statuses ++
 //  split view for employee FLM and HR
 // oredering for HR amd FLM
 // todo - todo:)

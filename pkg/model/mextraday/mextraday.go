@@ -29,7 +29,7 @@ func (l *ExtraDayList) GetAll() {
 				WHERE strftime('%Y',extra_day) = strftime('%Y','now')
 				OR
 					CASE
-		 				WHEN strftime('%Y','now') > 6
+		 				WHEN strftime('%m','now') > 6
 			 			THEN strftime('%Y',extra_day) = strftime('%Y',date('now','start of year', '+1 year'))
 						ELSE strftime('%Y',extra_day) = strftime('%Y',date('now','start of year', '-1 year'))
 					END
@@ -41,6 +41,7 @@ func (l *ExtraDayList) GetAll() {
 	for rows.Next() {
 		d := NewExtraDay()
 		err := rows.Scan(&d.Date, &d.Description, &d.Year)
+		d.Date = model.ReformatDate(d.Date)
 		model.CheckErr(err)
 		l.List = append(l.List, *d)
 	}

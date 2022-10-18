@@ -1,6 +1,8 @@
 package mtype
 
-import "vsystem/config"
+import (
+	"vsystem/config"
+)
 
 type VacationType struct {
 	TypeId    int
@@ -54,6 +56,7 @@ func (l *VacationTypeList) GetById(id int) VacationType {
 	for _, v := range l.List {
 		if v.TypeId == id {
 			*vT = v
+			break
 		}
 	}
 	return *vT

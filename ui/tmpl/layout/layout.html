@@ -10,6 +10,10 @@
         integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
 
+    <link rel="stylesheet" href="/assets/style.css">
+    <link href='/assets/fullcalendar/packages/core/main.css' rel='stylesheet' />
+    <link href='/assets/fullcalendar/packages/daygrid/main.css' rel='stylesheet' />
+
 </head>
 
 <body class="bg-light">
@@ -33,15 +37,20 @@
                 <a class='nav-link link-light {{if eq .MenuItem "holidays"}}active{{end}}'
                     href="/extra_days">Holidays</a>
             </li>
+            {{if eq .UType "HR"}}
             <li class="nav-item">
                 <a class='nav-link link-light {{if eq .MenuItem "Users"}}active{{end}}' href="/users">Employees</a>
+            </li>
+            {{end}}
+            <li class="nav-item">
+                <a class='nav-link link-light' href="/calendar">Calendar</a>
             </li>
             <li class="nav-item">
                 <a class='nav-link link-light' href="/logout">Logout</a>
             </li>
         </ul>
         <div class="col-md-3">
-            <span>&nbsp;<a class="navbar-brand link-light" href="/">{{.UTitle}}</a></span>
+            <a class="nav-link link-light" href="/">{{.UTitle}}&nbsp;|&nbsp;{{.UType}}</a>
         </div>
     </nav>
     <div class="container mt-1 bd-content">

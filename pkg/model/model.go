@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"math"
 	"time"
 	"vsystem/config"
 
@@ -24,6 +25,9 @@ func GetDB() *sql.DB {
 	log.Println("Connection to DB has been created")
 	return dbConn
 }
+func RoundDays(in float64) float64 {
+	return math.Round(in*100) / 100
+}
 
 func ReformatDate(dateIn string) string {
 	date, err := time.Parse("2006-01-02", dateIn)
@@ -31,11 +35,23 @@ func ReformatDate(dateIn string) string {
 	return fmt.Sprintf("%02d-%02d-%4d", date.Day(), date.Month(), date.Year())
 }
 
-func GetEndDate(dateIn string, duration int) string {
+func GetEndDate(dateIn string, duration float64) string {
+	var endDate time.Time
+	date, err := time.Parse("2006-01-02", dateIn)
+	if duration < 1.0 {
+		endDate = date
+	} else {
+		CheckErr(err)
+		endDate = date.AddDate(0, 0, int(duration))
+	}
+	return fmt.Sprintf("%02d-%02d-%4d", endDate.Day(), endDate.Month(), endDate.Year())
+}
+func GetEndDate4Cal(dateIn string, duration float64) string {
+	var endDate time.Time
 	date, err := time.Parse("2006-01-02", dateIn)
 	CheckErr(err)
-	endDate := date.AddDate(0, 0, duration)
-	return fmt.Sprintf("%02d-%02d-%4d", endDate.Day(), endDate.Month(), endDate.Year())
+	endDate = date.AddDate(0, 0, int(duration+1))
+	return fmt.Sprintf("%04d-%02d-%02d", endDate.Year(), endDate.Month(), endDate.Day())
 }
 
 func GetDuration(startDate, endDate string) int {

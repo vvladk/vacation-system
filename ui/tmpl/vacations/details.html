@@ -11,7 +11,7 @@
                 </div>
 
             </div>
-            <div class="row col-8">
+            <div class="row col-12">
                 <div class="p-2 w-50">Type:</div>
                 <div class="p-2 w-50 d-flex justify-content-start fw-bold">{{.Vacation.TypeTitle}}</div>
                 <div class="p-2 w-50">Start Date:</div>
@@ -20,13 +20,19 @@
                 <div class="p-2 w-50 d-flex justify-content-start fw-bold">{{.Vacation.EndDate}}</div>
                 <div class="p-2 w-50">Duration:</div>
                 <div class="p-2 w-50 d-flex justify-content-start fw-bold">{{.Vacation.Duration}} work days</div>
+                {{if eq .Partially "yes"}}
+                <div class="p-2 w-50">Part of Business day:</div>
+                <div class="p-2 w-50 d-flex justify-content-start fw-bold">{{.Part}}
+                    ({{if eq .Part 1}}10:00 - 14:00{{else}}15:00 - 19:00{{end}})
+                </div>
+                {{end}}
                 <div class="p-2 w-100 fw-bold"> Balance excluding current </div>
                 {{range .VacancyBalance}}
                 {{if eq $vacationTypeId .Id}}
-                <div class="p-2 w-50">Days for today:</div>
-                <div class="p-2 w-50 d-flex justify-content-start fw-bold">{{.TillNow}} work days</div>
-                <div class="p-2 w-50">Days till end of year:</div>
-                <div class="p-2 w-50 d-flex justify-content-start fw-bold">{{.AvailableTillNY}} work days</div>
+                <div class="p-2 w-50">As of Now:</div>
+                <div class="p-2 w-50 d-flex justify-content-start fw-bold">{{.AsOfNow}} work days</div>
+                <div class="p-2 w-50">As of Dec 31:</div>
+                <div class="p-2 w-50 d-flex justify-content-start fw-bold">{{.AsOfDec31}} work days</div>
                 {{end}}
                 {{end}}
             </div>
@@ -34,6 +40,8 @@
                 <input hidden name="StartDate" value="{{.Vacation.StartDate}}">
                 <input hidden name="EndDate" value="{{.Vacation.EndDate}}">
                 <input hidden name="TypeId" value="{{$vacationTypeId}}">
+                <input type="hidden" name="partially" value="{{.Partially}}">
+                <input type="hidden" name="PartOfBd" value="{{.Part}}">
                 <input hidden name="_method" value="PUT">
                 <button type="submit" class="btn btn-outline-secondary btn-sm">Create</button>
             </form>

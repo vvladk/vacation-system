@@ -12,8 +12,8 @@
                 <thead>
                     <tr>
                         <th scope="col">Type</th>
-                        <th scope="col">Available till DEC 31</th>
-                        <th scope="col">Available fo now</th>
+                        <th scope="col">As of Dec 31</th>
+                        <th scope="col">As of Now</th>
                         <th scope="col">Spent</th>
                     </tr>
                 </thead>
@@ -23,8 +23,8 @@
                     <tr>
                         <th scope="row">{{.Title}}</th>
                         {{if eq .IsUnLim false}}
-                        <td>{{.AvailableTillNY}}</td>
-                        <td>{{.TillNow}}</td>
+                        <td>{{.AsOfDec31}}</td>
+                        <td>{{.AsOfNow}}</td>
                         {{else}}
                         <td>-</td>
                         <td>-</td>
@@ -64,7 +64,6 @@
                         <th scope="col">Start Date</th>
                         <th scope="col">End Date</th>
                         <th scope="col">Duration</th>
-                        <th scope="col"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -75,8 +74,12 @@
                         <td>{{.StatusTitle}}</td>
                         <td>{{.StartDate}}</td>
                         <td>{{.EndDate}}</td>
-                        <td>{{.Duration}}</td>
-                        <td>{{if eq .Status 1}}delete{{else}}cancel{{end}}</td>
+                        <td>
+                            {{.Duration}}
+                            {{if eq .Partially `yes`}}
+                            ({{if eq .Part 1}}10:00 - 14:00{{else}}15:00 - 19:00{{end}})
+                            {{end}}
+                        </td>
                     </tr>
                     {{end}}
                 </tbody>

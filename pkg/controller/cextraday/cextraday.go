@@ -2,6 +2,7 @@ package cextraday
 
 import (
 	"net/http"
+	"vsystem/config"
 	"vsystem/pkg/controller"
 	"vsystem/pkg/model/mextraday"
 
@@ -26,8 +27,15 @@ func GetAll(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	data.MenuItem = "Holidays"
 
 	data.ExtraDayList.GetAll()
+	templ := "./ui/tmpl/extra_days/"
+	if data.UType != config.UTypeHR {
+		templ += "list_ro.html"
+	} else {
+		templ += "list.html"
+	}
+
 	tmpls := []string{
-		"./ui/tmpl/extra_days/list.html",
+		templ,
 		"./ui/tmpl/layout/links.html",
 		"./ui/tmpl/layout/layout.html",
 	}

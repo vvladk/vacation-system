@@ -1,0 +1,62 @@
+{{template "base" .}}
+
+{{define "main"}}
+{{$vacationTypes := .VacationTypeList.List}}
+<div class="row justify-content-center">
+    <div class="col-4">
+        {{template "tabs" .}}
+        <div class="card col-12">
+            <div class="card-body">
+                <h5 class="card-title">
+                    Vacation details
+                </h5>
+                <div class="col-md-12">
+                    <form method="get" action="/vacations/{{.Vacation.Id}}">
+                        <input type="hidden" name="partially" value="yes">
+                        <div class="row">
+                            <div class="col-6">
+                                <label for="StartDate" class="form-label">First Day</label>
+                                <input type="date" class="form-control" id="StartDate" name="StartDate"
+                                    aria-describedby="StartDateHelp" value="{{.Vacation.StartDate}}" required
+                                    onchange="SetMinDate();">
+                                <div id="StartDateHelp" class="form-text">
+                                    Select the first day of the vacation.<br />
+                                    The first day should be a working day.
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="PartOfBd" id="PartOfBd" value="1"
+                                        required>
+                                    <label class="form-check-label" for="inlineRadio1">1 st Part of Business day</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="PartOfBd" id="PartOfBd" value="2"
+                                        required>
+                                    <label class="form-check-label" for="inlineRadio2">2 nd Part of Business day</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="TypeId" class="form-label">Type of vacation</label>
+                            <select class="form-select" aria-label="Type select" name="TypeId" required>
+                                <option value="">Select the type of vacation</option>
+                                {{range $index, $element := $vacationTypes}}
+                                <option value="{{$element.TypeId}}" {{if eq $element.TypeId 0}}selected{{end}}>
+                                    {{$element.TypeTitle}}</option>
+                                {{end}}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-outline-secondary btn-sm">Preview</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function SetMinDate() {
+        document.getElementById('EndDate').min = document.getElementById('StartDate').value
+    }
+</script>
+{{end}}

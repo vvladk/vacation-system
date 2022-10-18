@@ -1,0 +1,10 @@
+{{define "tabs"}}
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link {{if ne .Partially `yes`}}active{{end}}" href="/vacation/0">1+ days</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{if eq .Partially `yes`}}active{{end}}" href="/vacation/0?partially=yes">0.5 day</a>
+    </li>
+</ul>
+{{end}}
