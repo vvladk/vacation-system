@@ -164,18 +164,27 @@ func (u *User) GetVacationBalabce(uId int, dataStart string, ExtraD, SD float64)
 			err = db.QueryRow(sqlS2, uId, vb.Id, config.AcceptedByHR).Scan(&tmpF)
 			model.CheckErr(err)
 			vb.Spent = tmpF.Float64
+			currentTime := time.Now()
+			//Check start date
+			dStart, err := time.Parse("2006-01-02", dataStart)
 			if vb.Rule == config.AvailableImmediately {
-				vb.AsOfNow = vb.AsOfDec31
+				if currentTime.Year() == dStart.Year() && currentTime.Month() > dStart.Month() {
+					vb.AsOfNow = vb.AsOfDec31
+				} else {
+					vb.AsOfDec31 = 0
+					vb.AsOfNow = 0
+				}
 			} else {
-				currentTime := time.Now()
-				//Check start date
-				dStart, err := time.Parse("2006-01-02", dataStart)
+
 				model.CheckErr(err)
 				if currentTime.Year() > dStart.Year() {
 					vb.AsOfNow = float64(currentTime.Month()-1) * vb.AsOfDec31 / 12
-				} else {
+				} else if currentTime.Year() == dStart.Year() && currentTime.Month() > dStart.Month() {
+					vb.AsOfNow = float64(currentTime.Month()-dStart.Month()) * vb.AsOfDec31 / 12
 					vb.AsOfDec31 = (12 - float64(dStart.Month()) + 1) * vb.AsOfDec31 / 12
-					vb.AsOfNow = float64(currentTime.Month()-1) * vb.AsOfDec31 / 12
+				} else {
+					vb.AsOfDec31 = 0
+					vb.AsOfNow = 0
 				}
 				if vb.Id == config.PaidVacationId {
 					vb.AsOfDec31 += ExtraD + SD

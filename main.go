@@ -31,10 +31,8 @@ func main() {
 
 	// routes for users
 	router.GET(`/users`, middleware.IsAuthorized(cuser.GetAll))
-	// router.GET(`/`, middleware.IsAuthorized(cuser.GetAll)) // TMP should be replaced!
 	router.GET(`/users/:uId`, middleware.IsAuthorized(cuser.CreateUpdate))
 	router.POST(`/user/:uId`, middleware.IsAuthorized(cuser.Save)) // Create and Update DB
-	// router.POST(`/users/:uId`, middleware.IsAuthorized(cuser.Delete)) // Delete from  DB TBD
 	router.GET(`/user/:uId`, middleware.IsAuthorized(cuser.ShowById))
 
 	// routes for Extra days
@@ -42,7 +40,7 @@ func main() {
 	router.GET(`/extra_day/:id`, middleware.IsAuthorized(cextraday.Create))
 	router.POST(`/extra_day/:id`, middleware.IsAuthorized(cextraday.Save))
 
-	// defaut path  get current list of my vacation
+	// defaut path get current list of my vacation
 	router.GET(`/`, middleware.Logging(middleware.IsAuthorized(cvacation.GetAllByUser)))
 	router.GET(`/vacation/:vId`, middleware.Logging(middleware.IsAuthorized(cvacation.GetOneById)))       //Show edit form for update/create
 	router.GET(`/vacations/:vId`, middleware.Logging(middleware.IsAuthorized(cvacation.PreviewVacation))) //Preview details
@@ -51,7 +49,6 @@ func main() {
 	// routes for manage requests
 	router.GET(`/requests`, middleware.Logging(middleware.IsAuthorized(crequest.GetAllByRole)))
 	router.POST(`/requests/:vId`, middleware.Logging(middleware.IsAuthorized(crequest.UpadetByManager)))
-	// router.GET(`/requests`, middleware.IsAuthorized(crequest.GetAllByRole))
 
 	//routes for calendar view
 	router.GET(`/calendar`, middleware.Logging(middleware.IsAuthorized(ccalendar.GetCalendar)))
@@ -60,11 +57,3 @@ func main() {
 	log.Fatal(http.ListenAndServe(serverString, router))
 
 }
-
-// todo
-// Add info about spillovers and extra days --
-// Add view of extra days for non HR +
-// update balanse calculation add - statuses ++
-//  split view for employee FLM and HR
-// oredering for HR amd FLM
-// todo - todo:)

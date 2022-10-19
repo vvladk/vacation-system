@@ -57,30 +57,37 @@ func GetAllByUser(rw http.ResponseWriter, r *http.Request, p httprouter.Params) 
 }
 func GetOneById(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	data := NewData(r)
-	data.Links = append(data.Links, controller.Links{Link: `/`, LinkActive: `true`, LinkTitle: `Vacations`})
+	session, _ := gothic.Store.Get(r, auth.CookiesName)
+	if v, ok := session.Values["ID"]; ok || v != nil {
 
-	data.MenuItem = "Vacations"
-	id, err := strconv.Atoi(p.ByName("vId"))
-	data.Links = append(data.Links, controller.Links{Link: `/`, LinkActive: `false`, LinkTitle: `Vacation details`})
-	model.CheckErr(err)
-	data.Vacation.GetById(id)
-	data.VacationTypeList.GetVacationTypeList()
-	form := "./ui/tmpl/vacations/"
-	if r.URL.Query().Get("partially") == `yes` {
-		data.Partially = `yes`
-		form += `form05.html`
+		data.User.GetById(v.(int))
 
-	} else {
-		form += `form.html`
+		data.Links = append(data.Links, controller.Links{Link: `/`, LinkActive: `true`, LinkTitle: `Vacations`})
+
+		data.MenuItem = "Vacations"
+		id, err := strconv.Atoi(p.ByName("vId"))
+		data.Links = append(data.Links, controller.Links{Link: `/`, LinkActive: `false`, LinkTitle: `Vacation details`})
+		model.CheckErr(err)
+		data.Vacation.GetById(id)
+
+		// data.VacationTypeList.GetVacationTypeList()
+		form := "./ui/tmpl/vacations/"
+		if r.URL.Query().Get("partially") == `yes` {
+			data.Partially = `yes`
+			form += `form05.html`
+
+		} else {
+			form += `form.html`
+		}
+
+		tmpls := []string{
+			form,
+			"./ui/tmpl/vacations/tabs.html",
+			"./ui/tmpl/layout/links.html",
+			"./ui/tmpl/layout/layout.html",
+		}
+		controller.ExeTemlates(rw, data, tmpls)
 	}
-
-	tmpls := []string{
-		form,
-		"./ui/tmpl/vacations/tabs.html",
-		"./ui/tmpl/layout/links.html",
-		"./ui/tmpl/layout/layout.html",
-	}
-	controller.ExeTemlates(rw, data, tmpls)
 }
 func PreviewVacation(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	data := NewData(r)

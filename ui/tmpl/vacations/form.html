@@ -39,9 +39,11 @@
                             <label for="TypeId" class="form-label">Type of vacation</label>
                             <select class="form-select" aria-label="Type select" name="TypeId" required>
                                 <option value="">Select the type of vacation</option>
-                                {{range $index, $element := $vacationTypes}}
-                                <option value="{{$element.TypeId}}" {{if eq $element.TypeId 0}}selected{{end}}>
-                                    {{$element.TypeTitle}}</option>
+                                {{range .User.VacancyBalance}}
+                                {{if eq .IsAvailable true}}
+                                <option value="{{.Id}}" {{if eq .Id 0}}selected{{end}}>
+                                    {{.Title}}</option>
+                                {{end}}
                                 {{end}}
                             </select>
                         </div>
