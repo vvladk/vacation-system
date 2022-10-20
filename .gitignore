@@ -17,3 +17,6 @@
 ini/vs.ini
 storage/vs.sqlite
 storage/init/02.insert.users.sql
+storage/init/02.insert.users.sql
+main
+vms
