@@ -1,0 +1,2 @@
+# Purpose of the solution.
+The Vacation management system is designed to ensure transparency in the accrual and management of vacations for employees of small IT companies. Takes into account the realities of Ukrainian IT.
